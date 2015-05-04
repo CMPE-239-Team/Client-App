@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title></title>
+  <link rel="stylesheet" href="/css/jquery-ui.css">
+  <script src="/js/jquery.js"></script>
+  <script src="/js/jquery-ui.js"></script>
+  <link href="/css/jquery-ui.css" rel="stylesheet">
+  
+  <script type="text/javascript" src="https://www.google.com/jsapi?autoload={'modules':[{'name':'visualization','version':'1.1','packages':['corechart']}]}"></script>
+  
+  <script>
+  $(function() {
+    $( "#tabs" ).tabs({
+      beforeLoad: function( event, ui ) {
+        ui.jqXHR.fail(function() {
+          ui.panel.html(
+            "Couldn't load this tab. We'll try to fix this as soon as possible. " +
+            "If this wouldn't be a demo." );
+        });
+      }
+    });
+
+  $('#tabs').bind('tabsactivate', function(event, ui) { 
+	  var index = ui.newTab.index();
+	  switch (index){
+	    case 2:
+	        getAllTweets();
+	        break;
+	  }
+	});
+	
+	
+	function getAllTweets() {
+        var params = {demoParam:"demoVal"}; 
+        alert(params);
+        $.get('/getAllTweets', params, function( data ) {
+        		drawPieChart(JSON.parse(data));
+        });
+    }
+    
+    
+    function drawPieChart(data) {
+        var data = google.visualization.arrayToDataTable([
+          ['Task', 'Hours per Day'],
+          ['Work',     11],
+          ['Eat',      2],
+          ['Commute',  2],
+          ['Watch TV', 2],
+          ['Sleep',    7]
+        ]);
+
+        var options = {
+          title: 'My Daily Activities',
+          is3D: true,
+        };
+
+        var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+
+        chart.draw(data, options);
+      }
+    
+  });	
+  </script>
+</head>
+<body>
+ 
+<div id="tabs">
+  <ul>
+    <li><a href="#tabs-1">Preloaded</a></li>
+    <li><a href="#tabs-2">Tab 1</a></li>
+    <li><a href="#tabs-3">Tab 2</a></li>
+    <li><a href="#tabs-4">Tab 3</a></li>
+    <li><a href="#tabs-5">Tab 4</a></li>
+  </ul>
+  <div id="tabs-1">
+    <p>Welcome !!!</p>
+  </div>
+  <div id="tabs-2">
+    <p>Tweet Map !!!</p>
+  </div>
+  <div id="tabs-3">
+    <p>Tweet Pie Chart !!!</p>
+    <div id="piechart" style="width: 900px; height: 500px;"></div>
+  </div>
+  <div id="tabs-4">
+    <p>Tweet Bar Chart !!!</p>
+  </div>
+  <div id="tabs-5">
+    <p>Tweets !!!</p>
+  </div>
+</div>
+
+
+ </body>
+</html>
