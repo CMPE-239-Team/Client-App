@@ -14,9 +14,33 @@ exports.getData = function(err, connection, callback) {
 };
 
 exports.getCountOfSentiment = function(err, connection, callback) {
-	console.log("in getData");
+	console.log("in getCountOfSentiment");
 	connection.aggregate([{$group: {
 		_id:"$tweet-sentiment-score",
+		totalQuantity: {$sum: 1}
+	}
+	}]).toArray( 
+			function(err, result) {
+				console.log("in getCountOfSentiment find");
+				if(err){
+					console.log("Error in find : \n" + err);
+					return JSON.parse('Error in fetching tweet details getCountOfSentiment');
+				} else if(result) {
+					console.log("in getCountOfSentiment find result");
+					console.log(result);
+					callback(result);
+				}
+			});
+};
+
+
+exports.getSentimentByLocation = function(err, connection, callback) {
+	console.log("in getSentimentByLocation");
+	connection.aggregate([{$group: {
+		_id:"",
+		lat:"$lat",
+		lng:"$lng",
+		tweetSentimentScore:"$tweet-sentiment-score",
 		totalQuantity: {$sum: 1}
 	}
 	}]).toArray( 

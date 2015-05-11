@@ -28,28 +28,59 @@ mongoClient.connect("mongodb://"+config.mongo.user_name+":"+config.mongo.passwor
 });
 
 app.get("/", function(req, res) {
-	//res.send('<h1 style="color:gray;">Welcome!!</h1>');
 	res.render("index");
 });
 
-app.get("/view1", function(req, res) {
-	/*	db.collection('collection1', function (err, connection){
-		console.log("in view1 get request");
-		if(err){
-			console.log("Error in fetching tweets collection : \n" + err);
-			db.close();
-		} else {
-			console.log("in view1 get request mymodulecall");
-			myModule.getData(err, connection, function(data) {
-				console.log("in view1 get request mymodulecall getdata");
-				//console.log(data);
-				res.render("view1", {tweets : JSON.stringify(data)});
-			});
-		}
-	});
-	 */
-	res.render("view1");
+
+app.get("/pie-chart", function(req, res) {
+	res.render("pie-chart");
 });
+
+app.get("/bar-chart", function(req, res) {
+	res.render("bar-chart");
+});
+
+app.get("/tweet-map", function(req, res) {
+	res.render("tweet-map");
+});
+
+app.get("/dashboard", function(req, res) {
+	res.render("dashboard");
+});
+
+
+
+app.post("/getSentiment", function(request, response) {
+	var searchQuery = request.params.query;
+	console.log("query received and processed "+searchQuery);
+	
+	var output = '';
+	var options = {
+	  host: 'localhost',
+	  port: 8080,
+	  path: '/sentimentAnalysis/?searchQuery='+searchQuery,
+	  method: 'GET'
+	};
+
+	var req = http.get(options, function(res) {
+	  res.on('data', function(chunk) {
+		output += chunk;
+	  }).on('end', function() {
+		console.log('STATUS: ' + res.statusCode);
+		console.log('OUTPUT : '+ output);
+	  })
+	});
+
+	req.on('error', function(e) {
+	  console.log('ERROR: ' + e.message);
+	});
+
+	req.end();
+	
+	response.render("view1");
+});
+
+
 
 app.get("/getAllTweets", function(req, res) {
 
@@ -65,30 +96,16 @@ app.get("/getAllTweets", function(req, res) {
 	});
 });
 
-app.get("/view2", function(req, res) {
-	db.collection('collection2', function (err, connection){
-		if(err){
-			console.log("Error in fetching tweets collection : \n" + err);
-			db.close();
-		} else {
-			myModule.getData(err, connection, function(data) {
-				//console.log(data);
-				res.render("view2", {tweets : JSON.parse(data)});
-			});
-		}
-	});
 
-});
+app.get("/getSentimentByLocation", function(req, res) {
 
-app.get("/view3", function(req, res) {
-	db.collection('collection3', function (err, connection){
-		if(err){
-			console.log("Error in fetching tweets collection : \n" + err);
-			db.close();
-		} else {
-			myModule.getData(err, connection, function(data) {
-				//console.log(data);
-				res.render("view3", {tweets : data});
+	console.log(" Demo Param : "+req.params.demoParam);
+	db.collection('collection1', function (err, connection){
+		console.log("in getalltweets get request");
+		if(!err) {
+			console.log("in getalltweets get request mymodulecall");
+			myModule.getSentimentByLocation(err, connection, function(data) {
+				res.send(JSON.stringify(data));
 			});
 		}
 	});
