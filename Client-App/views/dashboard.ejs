@@ -16,6 +16,9 @@
 
     <!-- MetisMenu CSS -->
     <link href="../bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+    
+     <!-- Timeline CSS -->
+    <link href="../dist/css/timeline.css" rel="stylesheet">
 
     <!-- Custom CSS -->
     <link href="../dist/css/sb-admin-2.css" rel="stylesheet">
@@ -109,13 +112,33 @@
             <div class="row">
                 <div class="col-lg-12">
                     <h1 class="page-header">Dashboard</h1>		    
-		    <!-- <div id="tweet-app" ></div> -->
+		    		<div id="myCanvasContainer">
+					 <canvas width="1000" height="300" id="myCanvas">
+					  	  <p>Anything in here will be replaced on browsers that support the canvas element</p>
+					 </canvas>
+					</div>
                 </div>
                 <!-- /.col-lg-12 -->
             </div>
             <!-- /.row -->
            
-            
+            <div class="row">
+                <div class="col-lg-12">
+                     <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-clock-o fa-fw"></i> Tweet Feed
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div style="height: 500px; overflow-Y:scroll;" class="panel-body">
+                            <ul id="tweet-feed" class="timeline">
+                            </ul>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>    
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+            <!-- /.row -->
         </div>
         <!-- /#page-wrapper -->
 
@@ -133,17 +156,113 @@
 
     <!-- Custom Theme JavaScript -->
     <script src="../dist/js/sb-admin-2.js"></script>
+    
+    <script src="/js/tagcanvas.min.js" type="text/javascript"></script>
 
-   <!-- <script>
-	(function(){
-	    setInterval(function() {
-			key = $("#query").val();
-			if(key != "")
-			  $("#tweet-app").load("http://localhost:8080/?keyword="+key);
-		}, 10000);
-	})();
-	
-    </script> -->
+  
+    
+    <script type="text/javascript">
+	  $(function() {
+	  
+		  var options = {
+		  textColour: '#319ed1',
+		  textHeight: 40,
+		  depth: 0.99,
+		  weight: true,
+		  weightMode: 'size',
+		  weightSize: 2.0,
+		  weightSizeMin: 100,
+		  weightSizeMax: 400,
+		  padding: 10,
+		  radiusX: 5
+		 };
+		  
+		  window.onload = function() {
+		    
+		      populateTagList();
+		      
+		      populateTweetFeed();
+		    
+		  };
+		  
+		  
+		  function populateTagList() {
+		  	var params = {};
+		  	$.get('/getAllHashTags', params, function( data ) {
+		        		var myData = JSON.parse(data);
+		        		
+		        		$.each(myData[0].hashTags, function() {
+			            	$('#myCanvas').append('<a href="#" style="font-size:'+ this.count +'" > #'+ this.tagName +' </a>');
+			        	});
+			        	
+			        	try {
+			        		TagCanvas.Start('myCanvas', '', options);
+			        	} catch(e) {
+					      // something went wrong, hide the canvas container
+					      document.getElementById('myCanvasContainer').style.display = 'none';
+					    }
+		        });
+		  }
+		  
+		  
+		  function populateTweetFeed() {
+		  	var params = {};
+		  	$.get('/getTweetFeed', params, function( data ) {
+		        		var myData = JSON.parse(data);
+		        		var i = 0;
+		        		$.each(myData[0].tweetList, function() {
+			            	if(i % 2 == 0) {
+			            		populateNormalTweet(this);
+			            	} else {
+			            		populateInvertedTweet(this);
+			            	}
+			            	i++;
+			        	});
+			        	
+			        	try {
+			        		TagCanvas.Start('myCanvas', '', options);
+			        	} catch(e) {
+					      // something went wrong, hide the canvas container
+					      document.getElementById('myCanvasContainer').style.display = 'none';
+					    }
+		        });
+		  }
+		  
+		  
+		  function populateNormalTweet(tweet) {
+			var str = ' <li> '+
+                      ' <div class="timeline-badge"><i class="fa fa-check"></i> ' +
+                      ' </div> ' +
+                      ' <div class="timeline-panel"> ' +
+                      ' <div class="timeline-heading"> ' +
+                      ' <h4 class="timeline-title">'+ tweet.user.userName +'</h4> ' +
+                      ' <p><small class="text-muted"><i class="fa fa-clock-o"></i> '+ tweet.createdAt +' via Twitter</small> ' +
+                      ' </p> ' +
+                      ' </div> ' +
+                      ' <div class="timeline-body"> ' +
+                      ' <p> ' + tweet.tweetText + ' </p> ' +
+                      ' </div> </div> </li>';
+		  	$('#tweet-feed').append(str);
+		  }
+		  
+		  function populateInvertedTweet(tweet) {
+		  	var str = ' <li class="timeline-inverted">'+
+                      ' <div class="timeline-badge"><i class="fa fa-check"></i> ' +
+                      ' </div> ' +
+                      ' <div class="timeline-panel"> ' +
+                      ' <div class="timeline-heading"> ' +
+                      ' <h4 class="timeline-title">'+ tweet.user.userName +'</h4> ' +
+                      ' <p><small class="text-muted"><i class="fa fa-clock-o"></i> '+ tweet.createdAt +' via Twitter</small> ' +
+                      ' </p> ' +
+                      ' </div> ' +
+                      ' <div class="timeline-body"> ' +
+                      ' <p> ' + tweet.tweetText + ' </p> ' +
+                      ' </div> </div> </li>';
+		  	$('#tweet-feed').append(str);
+		  }
+	  
+	  });
+	 </script> 
 
 </body>
 

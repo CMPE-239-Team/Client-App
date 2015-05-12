@@ -148,11 +148,15 @@
         }
 
 	function drawPieChart(data1) {
-	    	var sArray = [["Sentiment","Count"]];
-		        $.each(data1, function() {
-		            var item = [String(this._id), Number.parseInt(this.totalQuantity)];
-		            sArray.push(item);
-		        });
+	    	var sArray = [["Sentiment","Percentage"]];
+	    	
+	    	var item1 = ['Positive Sentiment', Number.parseInt(data1[0].positiveCount)];
+		    sArray.push(item1);
+		    var item2 = ['Negative Sentiment', Number.parseInt(data1[0].negativeCount)];
+		    sArray.push(item2);
+		    var item3 = ['Neutral Sentiment', Number.parseInt(data1[0].neutralCount)];
+		    sArray.push(item3);
+		    
 		var data = google.visualization.arrayToDataTable(sArray);
 
 		var options = {

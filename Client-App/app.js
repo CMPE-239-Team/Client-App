@@ -7,6 +7,7 @@ var express = require('express')
 , config = require('./config.js');
 
 var app = express();
+app.use(express.bodyParser());
 
 //all environments
 app.set('port', 3000);
@@ -51,14 +52,13 @@ app.get("/dashboard", function(req, res) {
 
 
 app.post("/getSentiment", function(request, response) {
-	var searchQuery = request.params.query;
+	var searchQuery = request.body.query;
 	console.log("query received and processed "+searchQuery);
 	
 	var output = '';
 	var options = {
-	  host: 'localhost',
-	  port: 8080,
-	  path: '/sentimentAnalysis/?searchQuery='+searchQuery,
+	  host: ' http://sentimentanalyzer-sjsuprojects.rhcloud.com',
+	  path: '/sentimentAnalysis/search?query='+searchQuery,
 	  method: 'GET'
 	};
 
@@ -77,7 +77,7 @@ app.post("/getSentiment", function(request, response) {
 
 	req.end();
 	
-	response.render("view1");
+	response.render("dashboard");
 });
 
 
@@ -85,11 +85,41 @@ app.post("/getSentiment", function(request, response) {
 app.get("/getAllTweets", function(req, res) {
 
 	console.log(" Demo Param : "+req.params.demoParam);
-	db.collection('collection1', function (err, connection){
+	db.collection('TweetResult', function (err, connection){
 		console.log("in getalltweets get request");
 		if(!err) {
 			console.log("in getalltweets get request mymodulecall");
 			myModule.getCountOfSentiment(err, connection, function(data) {
+				res.send(JSON.stringify(data));
+			});
+		}
+	});
+});
+
+
+app.get("/getAllHashTags", function(req, res) {
+
+	console.log(" Demo Param : "+req.params.demoParam);
+	db.collection('HashCount', function (err, connection){
+		console.log("in getAllHashTags get request");
+		if(!err) {
+			console.log("in getalltweets get request mymodulecall");
+			myModule.getHashCount(err, connection, function(data) {
+				res.send(JSON.stringify(data));
+			});
+		}
+	});
+});
+
+
+app.get("/getTweetFeed", function(req, res) {
+
+	console.log(" Demo Param : "+req.params.demoParam);
+	db.collection('TweetResult', function (err, connection){
+		console.log("in getTweetFeed get request");
+		if(!err) {
+			console.log("in getTweetFeed get request mymodulecall");
+			myModule.getTweetFeed(err, connection, function(data) {
 				res.send(JSON.stringify(data));
 			});
 		}
