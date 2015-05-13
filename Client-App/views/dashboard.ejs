@@ -37,8 +37,13 @@
 
 <body>
 
+	
+	<div id="loader" style="display:none; width:80%; height:50%; margin-left: 30%; margin-right: auto;" >
+		<img src="/img/loader.gif" height="50%" width="50%" alt=""/>
+	</div> 
+	
     <div id="wrapper">
-
+		
         <!-- Navigation -->
         <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
 		<div class="container topnav">
@@ -73,10 +78,11 @@
                     <ul class="nav" id="side-menu">
                         <li class="sidebar-search">
 			<form id="searchForm" method="POST" action="getSentiment">
+			<!-- Default ID value is set for first time load - do not change -->
                             <div class="input-group custom-search-form">
                                 <input id="query" name="query" type="text" class="form-control" placeholder="Search...">
                                 <span class="input-group-btn">
-                                <button class="btn btn-default" type="submit">
+                                <button id="searchBtn" class="btn btn-default" type="button">
                                     <i class="fa fa-search"></i>
                                 </button>
                             </span>
@@ -90,7 +96,7 @@
                         <li>
                             <a href="#"><i class="fa fa-bar-chart-o fa-fw"></i> Charts<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
-                                <li>
+                                 <li>
                                     <a href="pie-chart">Sentiment Score</a>
                                 </li>
                                 <li>
@@ -163,7 +169,7 @@
     
     <script type="text/javascript">
 	  $(function() {
-	  
+	  	
 		  var options = {
 		  textColour: '#319ed1',
 		  textHeight: 40,
@@ -176,6 +182,28 @@
 		  padding: 10,
 		  radiusX: 5
 		 };
+		  
+		  $("#searchBtn").click(function() {
+		  	$("#loader").show();
+		  	$("#wrapper").hide();
+		  	$("#searchForm").submit();
+		  });
+		  
+		  
+		  
+		 /* $("#searchBtn").click(function() {
+			  	alert('in search click');
+			  	var query1 = $('#query').val();
+			  	$.ajax({
+					  	url : "http://192.168.43.248:8080/sentimentAnalysis/search",
+					  	type: "GET",
+					  	data: {
+					  		query : query1
+					  	}
+				  	}).done(function( data, txtStatus, xhr ) {
+				  		alert(data);
+				  	});
+		  }); */
 		  
 		  window.onload = function() {
 		    

@@ -1,5 +1,5 @@
 var express = require('express')
-,	mongoClient = require('mongodb').MongoClient
+, mongoClient = require('mongodb').MongoClient
 , http = require('http')
 , path = require('path')
 , url = require('url')
@@ -17,6 +17,7 @@ app.use(express.static('./public'));
 app.use('/public', express.static(path.resolve('./public')));
 
 var db;
+var search_id = "555273a3e4b0819b8b524530";
 
 /*
  * Connection pooling to minimize database overheads
@@ -29,6 +30,7 @@ mongoClient.connect("mongodb://"+config.mongo.user_name+":"+config.mongo.passwor
 });
 
 app.get("/", function(req, res) {
+	search_id = "555273a3e4b0819b8b524530"
 	res.render("index");
 });
 
@@ -53,43 +55,50 @@ app.get("/dashboard", function(req, res) {
 
 app.post("/getSentiment", function(request, response) {
 	var searchQuery = request.body.query;
-	console.log("query received and processed "+searchQuery);
+	//console.log("query received and processed "+searchQuery);
 	
 	var output = '';
 	var options = {
-	  host: ' http://sentimentanalyzer-sjsuprojects.rhcloud.com',
+	  host: 'sentimentanalyzer-sjsuprojects.rhcloud.com',
 	  path: '/sentimentAnalysis/search?query='+searchQuery,
 	  method: 'GET'
 	};
 
-	var req = http.get(options, function(res) {
+	var s = 'http://sentimentanalyzer-sjsuprojects.rhcloud.com/sentimentAnalysis/search?query='+searchQuery;
+	//console.log(s);
+	var req = http.request(s, function(res) {
 	  res.on('data', function(chunk) {
+	  	//console.log('--------------------------------------------------------------------------asdjasjdsad : '+ chunk);
 		output += chunk;
-	  }).on('end', function() {
-		console.log('STATUS: ' + res.statusCode);
-		console.log('OUTPUT : '+ output);
-	  })
+	  });
+	  
+	  res.on('end', function() {
+		//console.log('STATUS: ' + res.statusCode);
+		//console.log('OUTPUT : '+ output);
+		
+		if(output != "" &&  output != "FAILURE" ) {
+			var str = output.trim();
+			//console.log("========>"+str);
+			search_id = str;
+		} 
+		response.render("dashboard");
+	  });
 	});
 
 	req.on('error', function(e) {
-	  console.log('ERROR: ' + e.message);
+	  //console.log('ERROR: ' + e.message);
 	});
 
 	req.end();
-	
-	response.render("dashboard");
 });
 
 
-
 app.get("/getAllTweets", function(req, res) {
-
-	console.log(" Demo Param : "+req.params.demoParam);
 	db.collection('TweetResult', function (err, connection){
-		console.log("in getalltweets get request");
+		//console.log("in getalltweets get request");
 		if(!err) {
-			console.log("in getalltweets get request mymodulecall");
-			myModule.getCountOfSentiment(err, connection, function(data) {
+			//console.log("in getalltweets get request mymodulecall");
+			myModule.getCountOfSentiment(err, connection, search_id, function(data) {
 				res.send(JSON.stringify(data));
 			});
 		}
@@ -98,13 +107,11 @@ app.get("/getAllTweets", function(req, res) {
 
 
 app.get("/getAllHashTags", function(req, res) {
-
-	console.log(" Demo Param : "+req.params.demoParam);
 	db.collection('HashCount', function (err, connection){
-		console.log("in getAllHashTags get request");
+		//console.log("in getAllHashTags get request");
 		if(!err) {
-			console.log("in getalltweets get request mymodulecall");
-			myModule.getHashCount(err, connection, function(data) {
+			//console.log("in getalltweets get request mymodulecall");
+			myModule.getHashCount(err, connection, search_id, function(data) {
 				res.send(JSON.stringify(data));
 			});
 		}
@@ -113,13 +120,11 @@ app.get("/getAllHashTags", function(req, res) {
 
 
 app.get("/getTweetFeed", function(req, res) {
-
-	console.log(" Demo Param : "+req.params.demoParam);
 	db.collection('TweetResult', function (err, connection){
-		console.log("in getTweetFeed get request");
+		//console.log("in getTweetFeed get request");
 		if(!err) {
-			console.log("in getTweetFeed get request mymodulecall");
-			myModule.getTweetFeed(err, connection, function(data) {
+			//console.log("in getTweetFeed get request mymodulecall");
+			myModule.getTweetFeed(err, connection, search_id, function(data) {
 				res.send(JSON.stringify(data));
 			});
 		}
@@ -128,12 +133,10 @@ app.get("/getTweetFeed", function(req, res) {
 
 
 app.get("/getSentimentByLocation", function(req, res) {
-
-	console.log(" Demo Param : "+req.params.demoParam);
 	db.collection('collection1', function (err, connection){
-		console.log("in getalltweets get request");
+		//console.log("in getalltweets get request");
 		if(!err) {
-			console.log("in getalltweets get request mymodulecall");
+			//console.log("in getalltweets get request mymodulecall");
 			myModule.getSentimentByLocation(err, connection, function(data) {
 				res.send(JSON.stringify(data));
 			});
@@ -143,5 +146,5 @@ app.get("/getSentimentByLocation", function(req, res) {
 
 
 http.createServer(app).listen(app.get('port'), function(){
-	console.log('Express server listening on port ' + app.get('port'));
+	//console.log('Express server listening on port ' + app.get('port'));
 });

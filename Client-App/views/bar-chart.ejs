@@ -33,8 +33,12 @@
 </head>
 
 <body>
+	<div id="loader" style="display:none; width:80%; height:50%; margin-left: 30%; margin-right: auto;" >
+		<img src="/img/loader.gif" height="50%" width="50%" alt=""/>
+	</div> 
 
     <div id="wrapper">
+
 
         <!-- Navigation -->
         <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
@@ -73,7 +77,7 @@
                             <div class="input-group custom-search-form">
                                 <input id="query" name="query" type="text" class="form-control" placeholder="Search...">
                                 <span class="input-group-btn">
-                                <button class="btn btn-default" type="submit">
+                                <button id="searchBtn" class="btn btn-default" type="button">
                                     <i class="fa fa-search"></i>
                                 </button>
                             </span>
@@ -108,7 +112,7 @@
         <div id="page-wrapper">
             <div class="row">
                 <div class="col-lg-12">
-                    <h1 class="page-header">Histogram Chart</h1>		    
+                    <h1 class="page-header">Sentiment Histogram</h1>		    
    		    <div id="columnchart_values" style="width: 100%; height: 500px;"></div>
                 </div>
                 <!-- /.col-lg-12 -->
@@ -138,6 +142,13 @@
 
     <script>
 	$(function() {
+	$("#searchBtn").click(function() {
+		  	$("#loader").show();
+		  	$("#wrapper").hide();
+		  	$("#searchForm").submit();
+		  });
+		  
+	
 	google.setOnLoadCallback(getAllTweets);
 
 	function getAllTweets() {
