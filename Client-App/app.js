@@ -31,7 +31,7 @@ mongoClient.connect("mongodb://"+config.mongo.user_name+":"+config.mongo.passwor
 });
 
 app.get("/", function(req, res) {
-	search_id = "555273a3e4b0819b8b524530"
+	search_id = "55529b57e4b0819b8b524549"
 	res.render("index");
 });
 

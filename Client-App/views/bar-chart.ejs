@@ -162,11 +162,11 @@
 	    	var color = ['#b87333','silver','gold'];
 	    	var sArray = [['Sentiment', 'Tweet Count', { role: 'style' }, { role: 'annotation' }]];
 	    	
-		    var item1 = ['Positive Sentiment', Number.parseInt(data1[0].positiveCount), color[0], 'Positive Sentiment'];
+		    var item1 = ['Positive Sentiment', Number.parseInt(data1[0].positiveCount)*10, color[0], 'Positive Sentiment'];
 		    sArray.push(item1);
-		    var item2 = ['Negative Sentiment', Number.parseInt(data1[0].negativeCount), color[1], 'Negative Sentiment'];
+		    var item2 = ['Negative Sentiment', Number.parseInt(data1[0].negativeCount)*10, color[1], 'Negative Sentiment'];
 		    sArray.push(item2);
-		    var item3 = ['Neutral Sentiment', Number.parseInt(data1[0].neutralCount), color[2], 'Neutral Sentiment'];
+		    var item3 = ['Neutral Sentiment', Number.parseInt(data1[0].neutralCount)*10, color[2], 'Neutral Sentiment'];
 		    sArray.push(item3);
 		    
 		var data = google.visualization.arrayToDataTable(sArray);
