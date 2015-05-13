@@ -10,14 +10,15 @@ var app = express();
 app.use(express.bodyParser());
 
 //all environments
-app.set('port', 3000);
+app.set('port', process.env.OPENSHIFT_NODEJS_PORT || 3000);
+app.set('ipaddress',process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1');
 app.set('views', './views');
 app.set('view engine', 'ejs');
 app.use(express.static('./public'));
 app.use('/public', express.static(path.resolve('./public')));
 
 var db;
-var search_id = "555273a3e4b0819b8b524530";
+var search_id = "55529b57e4b0819b8b524549";
 
 /*
  * Connection pooling to minimize database overheads
@@ -145,6 +146,6 @@ app.get("/getSentimentByLocation", function(req, res) {
 });
 
 
-http.createServer(app).listen(app.get('port'), function(){
+http.createServer(app).listen(app.get('port'), app.get('ipaddress'), function(){
 	//console.log('Express server listening on port ' + app.get('port'));
 });
